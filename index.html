@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dos meses con vos ❤️</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Fuentes lindas de Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <main class="container">
+        <!-- Encabezado -->
+        <header class="hero">
+            <span class="badge">10 / 09 — 10 / 11 — ∞ / ∞ </span>
+            <h1>Dos meses con vos, mi amor</h1>
+            <p class="subtitle">Que estos dos meses sean solo el principio de una historia maravillosa juntos.</p>
+        </header>
+
+        <!-- Contador en vivo -->
+        <section class="counter-section">
+            <p class="counter-label">Estamos saliendo hace:</p>
+            <div class="counter-grid" id="contador">
+                <div class="time-box">
+                    <span id="dias">00</span>
+                    <small>Días</small>
+                </div>
+                <div class="time-box">
+                    <span id="horas">00</span>
+                    <small>Horas</small>
+                </div>
+                <div class="time-box">
+                    <span id="minutos">00</span>
+                    <small>Minutos</small>
+                </div>
+                <div class="time-box">
+                    <span id="segundos">00</span>
+                    <small>Segundos</small>
+                </div>
+            </div>
+        </section>
+
+<!-- Sección de recuerdos sin fotos -->
+        <section class="memories">
+            <h2>Nuestros momentos</h2>
+            <div class="cards">
+                <article class="memory-card">
+                    <span class="memory-tag">✨ Un día cualquiera</span>
+                    <h3>Cualquier momento con vos</h3>
+                    <p>Reírme con vos viendo mil cosas distintas y darme cuenta de que no necesito ningún plan complicado para pasarla increíble a tu lado.</p>
+                </article>
+
+                <article class="memory-card">
+                    <span class="memory-tag">💛 Lo que más valoro</span>
+                    <h3>Tu forma de estar</h3>
+                    <p>Gracias por apoyarme, por escucharme cuando lo necesito y por hacer de mi mundo, un mundo más lindo. Un mundo dónde sos mi sol que ilumina mis días.</p>
+                </article>
+            </div>
+        </section>
+
+        <!-- Carta final -->
+        <section class="letter">
+            <div class="letter-paper">
+                <p>Mili, mi amor.</p>
+                <p>
+                    Quiero hacerte llegar mi más sincero amor por vos, no puedo negar que te amo como el primer día. Y quiero seguir amandote hasta el resto de mi vida, no pienso dar marcha atrás.
+                </p>
+                <p>
+                    Aún si llegamos a enojarnos, sigo eligiendo estar con vos. Quiero que podamos avanzar por la vida juntos, aprendiendo cuando nos equivocamos y, a su vez, tener la intención de poder corregirnos a nosotros mismos. 
+                </p>
+                <p>
+                    A tu lado soy feliz, y me encanta seguir construyendo recuerdos con vos, paso a paso.
+                </p>
+                <p> 
+                    Te amé, te sigo amando y te amaré por siempre.
+                </p>
+                <p class="signature">Con todo mi cariño,<br><strong>Eze ❤️</strong></p>
+            </div>
+        </section>
+
+        <footer>
+            <p> </p>
+        </footer>
+    </main>
+
+    <!-- Script para el contador desde el 10 de septiembre de 2026 -->
+    <script>
+        const fechaInicio = new Date("2026-09-10T00:00:00").getTime();
+
+        function actualizarContador() {
+            const ahora = new Date().getTime();
+            const diferencia = ahora - fechaInicio;
+
+            const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+            const segundos = Math.floor((diferencia % (1000 * 60)) / 1000);
+
+            document.getElementById("dias").innerText = dias;
+            document.getElementById("horas").innerText = horas < 10 ? "0" + horas : horas;
+            document.getElementById("minutos").innerText = minutos < 10 ? "0" + minutos : minutos;
+            document.getElementById("segundos").innerText = segundos < 10 ? "0" + segundos : segundos;
+        }
+
+        setInterval(actualizarContador, 1000);
+        actualizarContador();
+    </script>
+</body>
+</html>
