@@ -177,6 +177,212 @@ footer {
     padding-top: 10px;
 }
 
+/* 1. Latido suave para tu contador o título principal */
+.latido {
+  animation: pulsoAmor 1.8s infinite ease-in-out;
+}
+
+@keyframes pulsoAmor {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+/* 2. Tarjetas interactivas 3D (Flip Cards) */
+.contenedor-tarjetas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin: 25px auto;
+  max-width: 750px;
+  perspective: 1000px;
+}
+
+.tarjeta-3d {
+  height: 150px;
+  cursor: pointer;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+}
+
+.tarjeta-3d.volteada {
+  transform: rotateY(180deg);
+}
+
+.cara-frente, .cara-dorso {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  text-align: center;
+  box-sizing: border-box;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+}
+
+.cara-frente {
+  background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
+  color: white;
+  font-weight: bold;
+  font-size: 1.05rem;
+}
+
+.cara-dorso {
+  background: #fff0f3;
+  color: #4a1525;
+  transform: rotateY(180deg);
+  font-size: 0.95rem;
+  border: 2px solid #ff758c;
+}
+
+/* 3. Sección del botón juguetón */
+.zona-pregunta {
+  text-align: center;
+  margin: 35px auto;
+  padding: 20px;
+  position: relative;
+  min-height: 130px;
+}
+
+.botones-juego {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.btn-si, .btn-no {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.btn-si {
+  background-color: #ff4d6d;
+  color: white;
+}
+
+.btn-no {
+  background-color: #adb5bd;
+  color: white;
+  position: relative;
+}
+
+/* 4. Partículas al tocar la pantalla */
+.particula-amor {
+  position: fixed;
+  pointer-events: none;
+  font-size: 22px;
+  user-select: none;
+  z-index: 9999;
+  animation: flotarYDesvanecer 1.2s ease-out forwards;
+}
+
+/* Estilos de la Ruleta de Premios */
+.zona-ruleta {
+  text-align: center;
+  margin: 30px auto;
+  padding: 20px;
+  max-width: 350px;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.contenedor-ruleta {
+  position: relative;
+  width: 240px;
+  height: 240px;
+  margin: 20px auto;
+}
+
+.puntero-ruleta {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-top: 24px solid #ff4d6d;
+  z-index: 10;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.ruleta {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 6px solid #ff4d6d;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+  /* 6 gajos de colores suaves */
+  background: conic-gradient(
+    #ff758c 0deg 60deg,
+    #ffb3c1 60deg 120deg,
+    #ff8fa3 120deg 180deg,
+    #ffc2d1 180deg 240deg,
+    #ff758c 240deg 300deg,
+    #ffb3c1 300deg 360deg
+  );
+}
+
+.icono-gajo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 22px;
+  transform-origin: 0 0;
+}
+
+.btn-girar {
+  background: linear-gradient(135deg, #ff4d6d, #ff758c);
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 25px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(255, 77, 109, 0.35);
+  transition: transform 0.2s, opacity 0.3s;
+}
+
+.btn-girar:disabled {
+  background: #adb5bd;
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.cartel-premio {
+  margin-top: 18px;
+  padding: 12px;
+  background: #fff0f3;
+  border: 2px dashed #ff4d6d;
+  border-radius: 12px;
+  color: #4a1525;
+  font-weight: bold;
+  display: none;
+}
+
+@keyframes flotarYDesvanecer {
+  0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); }
+  50% { opacity: 1; transform: translate(-50%, -120%) scale(1.2); }
+  100% { opacity: 0; transform: translate(-50%, -220%) scale(0.9); }
+}
+
 /* Adaptación para pantallas más grandes */
 @media (min-width: 500px) {
     .cards {

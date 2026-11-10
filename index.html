@@ -21,6 +21,7 @@
         <!-- Contador en vivo -->
         <section class="counter-section">
             <p class="counter-label">Estamos saliendo hace:</p>
+            <div class="latido">
             <div class="counter-grid" id="contador">
                 <div class="time-box">
                     <span id="dias">00</span>
@@ -38,6 +39,7 @@
                     <span id="segundos">00</span>
                     <small>Segundos</small>
                 </div>
+            </div>
             </div>
         </section>
 
@@ -59,6 +61,29 @@
             </div>
         </section>
 
+        <!-- Ruleta Misteriosa de 1 solo uso -->
+<div class="zona-ruleta">
+  <h3 style="margin-top:0; color:#ff4d6d;">🎡 Ruleta Misteriosa</h3>
+  <p style="font-size:0.9rem; color:#555;">Tenés 1 solo giro para ganar un vale especial:</p>
+  
+  <div class="contenedor-ruleta">
+    <div class="puntero-ruleta"></div>
+    <div class="ruleta" id="ruleta">
+      <!-- Signos de pregunta en cada gajo para mantener el misterio -->
+      <span class="icono-gajo" style="transform: rotate(30deg) translate(65px, -12px);">❓</span>
+      <span class="icono-gajo" style="transform: rotate(90deg) translate(65px, -12px);">🎁</span>
+      <span class="icono-gajo" style="transform: rotate(150deg) translate(65px, -12px);">❓</span>
+      <span class="icono-gajo" style="transform: rotate(210deg) translate(65px, -12px);">✨</span>
+      <span class="icono-gajo" style="transform: rotate(270deg) translate(65px, -12px);">❓</span>
+      <span class="icono-gajo" style="transform: rotate(330deg) translate(65px, -12px);">💖</span>
+    </div>
+  </div>
+
+  <button class="btn-girar" id="btnGirar" onclick="girarRuleta()">¡Girar Ruleta!</button>
+  
+  <div class="cartel-premio" id="cartelPremio"></div>
+</div>
+
         <!-- Carta final -->
         <section class="letter">
             <div class="letter-paper">
@@ -67,7 +92,7 @@
                     Quiero hacerte llegar mi más sincero amor por vos, no puedo negar que te amo como el primer día. Y quiero seguir amandote hasta el resto de mi vida, no pienso dar marcha atrás.
                 </p>
                 <p>
-                    Aún si llegamos a enojarnos, sigo eligiendo estar con vos. Quiero que podamos avanzar por la vida juntos, aprendiendo cuando nos equivocamos y, a su vez, tener la intención de poder corregirnos a nosotros mismos. 
+                    Aún si llegamos a tener momentos difíciles, sigo eligiendo estar con vos. Quiero que podamos avanzar por la vida juntos, aprendiendo cuando nos equivocamos y, a su vez, tener la intención de poder corregirnos a nosotros mismos. 
                 </p>
                 <p>
                     A tu lado soy feliz, y me encanta seguir construyendo recuerdos con vos, paso a paso.
@@ -79,10 +104,139 @@
             </div>
         </section>
 
+        
+
+<!-- Minijuego del botón que se escapa -->
+<div class="zona-pregunta">
+  <h3>¿Seguimos sumando muchos meses más juntos? 🥰</h3>
+  <div class="botones-juego">
+    <button class="btn-si" id="btnSi" onclick="celebrarSi()">¡Sí! 💖</button>
+    <button class="btn-no" id="btnNo" onmouseover="escaparBoton()" ontouchstart="escaparBoton()">No</button>
+  </div>
+  <p id="mensajeFinal" style="display:none; color:#ff4d6d; font-weight:bold; margin-top:15px; font-size:1.1rem;">
+    ¡Sabía que ibas a decir que sí! Te amo muchísimo ❤️
+  </p>
+</div>
+
         <footer>
             <p> </p>
         </footer>
     </main>
+
+    <script>
+    // Lista de 6 premios misteriosos (podés cambiarlos por lo que quieras)
+const premios = [
+  "🍦 ¡Vale por un helado!",
+  "🤗 ¡Vale por un abrazo gigante de 1 minuto (o cuanto quieras que dure)!",
+  "🎬 ¡Vale por un que tu novio tenga que informarse de algo que te guste y deba exponerlo!",
+  "🍫 ¡Vale por un chocolate la próxima vez que nos veamos!",
+  "🍦 ¡Vale por un helado!",
+  "🍦 ¡Vale por un helado!"
+];
+
+const CLAVE_STORAGE = "premio_aniversario_mili_v1";
+
+// Al cargar la página, revisa si ya giró antes
+window.addEventListener("DOMContentLoaded", () => {
+  const premioGuardado = localStorage.getItem(CLAVE_STORAGE);
+  if (premioGuardado) {
+    mostrarPremioCanjeado(premioGuardado, false);
+  }
+});
+
+function girarRuleta() {
+  // Doble seguridad por si intenta tocar rápido
+  if (localStorage.getItem(CLAVE_STORAGE)) return;
+
+  const btnGirar = document.getElementById("btnGirar");
+  const ruleta = document.getElementById("ruleta");
+  btnGirar.disabled = true;
+  btnGirar.innerText = "Girando...";
+
+  // Elige un premio al azar (del 0 al 5)
+  const indiceGanador = Math.floor(Math.random() * premios.length);
+  const premioElegido = premios[indiceGanador];
+
+  // Calcula los grados para que caiga justo en el gajo ganador + 5 vueltas completas
+  const gradosPorGajo = 360 / premios.length;
+  const anguloObjetivo = 360 - (indiceGanador * gradosPorGajo + gradosPorGajo / 2);
+  const rotacionTotal = (360 * 5) + anguloObjetivo;
+
+  ruleta.style.transform = `rotate(${rotacionTotal}deg)`;
+
+  // Espera los 4 segundos que dura la animación de giro
+  setTimeout(() => {
+    localStorage.setItem(CLAVE_STORAGE, premioElegido);
+    mostrarPremioCanjeado(premioElegido, true);
+  }, 4100);
+}
+
+function mostrarPremioCanjeado(premio, lanzarConfeti) {
+  const btnGirar = document.getElementById("btnGirar");
+  const cartel = document.getElementById("cartelPremio");
+
+  btnGirar.disabled = true;
+  btnGirar.innerText = "Premio ya canjeado 🔒";
+
+  cartel.style.display = "block";
+  cartel.innerHTML = `🎉 ¡Ganaste!<br><span style="font-size:1.1rem; color:#ff4d6d;">${premio}</span><br><small style="color:#666; font-weight:normal;">(Sacale captura para canjearlo 😉)</small>`;
+
+  if (lanzarConfeti && typeof confetti === "function") {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+  }
+}
+</script>
+    <!-- Librería liviana de confeti -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<script>
+  // 1. Confeti automático apenas carga la web
+  window.addEventListener('load', () => {
+    confetti({
+      particleCount: 70,
+      spread: 60,
+      origin: { y: 0.6 }
+    });
+  });
+
+  // 2. Corazones al tocar cualquier parte de la pantalla
+  const emojis = ['💖', '✨', '💕', '🌸'];
+  document.addEventListener('click', (e) => {
+    const particula = document.createElement('span');
+    particula.classList.add('particula-amor');
+    particula.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+    particula.style.left = e.clientX + 'px';
+    particula.style.top = e.clientY + 'px';
+    document.body.appendChild(particula);
+
+    setTimeout(() => particula.remove(), 1200);
+  });
+
+  // 3. El botón "No" que se escapa (funciona en PC y táctil en celular)
+  function escaparBoton() {
+    const btnNo = document.getElementById('btnNo');
+    const maxX = 120;
+    const maxY = 80;
+    const randomX = (Math.random() - 0.5) * maxX * 2;
+    const randomY = (Math.random() - 0.5) * maxY * 2;
+    btnNo.style.transform = `translate(${randomX}px, ${randomY}px)`;
+  }
+
+  // 4. Celebración al tocar "Sí"
+  function celebrarSi() {
+    document.getElementById('mensajeFinal').style.display = 'block';
+    document.getElementById('btnNo').style.display = 'none';
+    confetti({
+      particleCount: 120,
+      spread: 80,
+      origin: { y: 0.7 }
+    });
+  }
+</script>
 
     <!-- Script para el contador desde el 10 de septiembre de 2026 -->
     <script>
