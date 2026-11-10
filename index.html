@@ -61,21 +61,19 @@
             </div>
         </section>
 
-        <!-- Ruleta Misteriosa de 1 solo uso -->
+        <!-- Ruleta Misteriosa de 4 premios (1 solo tiro extra permitido) -->
 <div class="zona-ruleta">
   <h3 style="margin-top:0; color:#ff4d6d;">🎡 Ruleta Misteriosa</h3>
-  <p style="font-size:0.9rem; color:#555;">Tenés 1 solo giro para ganar un vale especial:</p>
+  <p style="font-size:0.9rem; color:#555;">Tenés un giro y la opción de arriesgarte una vez más:</p>
   
   <div class="contenedor-ruleta">
     <div class="puntero-ruleta"></div>
-    <div class="ruleta" id="ruleta">
-      <!-- Signos de pregunta en cada gajo para mantener el misterio -->
-      <span class="icono-gajo" style="transform: rotate(30deg) translate(65px, -12px);">❓</span>
-      <span class="icono-gajo" style="transform: rotate(90deg) translate(65px, -12px);">🎁</span>
-      <span class="icono-gajo" style="transform: rotate(150deg) translate(65px, -12px);">❓</span>
-      <span class="icono-gajo" style="transform: rotate(210deg) translate(65px, -12px);">✨</span>
-      <span class="icono-gajo" style="transform: rotate(270deg) translate(65px, -12px);">❓</span>
-      <span class="icono-gajo" style="transform: rotate(330deg) translate(65px, -12px);">💖</span>
+    <!-- Fondo adaptado a 4 gajos con conic-gradient -->
+    <div class="ruleta" id="ruleta" style="background: conic-gradient(#ff758c 0deg 90deg, #ffb3c1 90deg 180deg, #ff8fa3 180deg 270deg, #ffc2d1 270deg 360deg);">
+      <span class="icono-gajo" style="transform: rotate(45deg) translate(65px, -12px);">❓</span>
+      <span class="icono-gajo" style="transform: rotate(135deg) translate(65px, -12px);">🎁</span>
+      <span class="icono-gajo" style="transform: rotate(225deg) translate(65px, -12px);">✨</span>
+      <span class="icono-gajo" style="transform: rotate(315deg) translate(65px, -12px);">💖</span>
     </div>
   </div>
 
@@ -129,57 +127,81 @@ const premios = [
   "🍦 ¡Vale por un helado!",
   "🤗 ¡Vale por un abrazo gigante de 1 minuto (o cuanto quieras que dure)!",
   "🎬 ¡Vale por un que tu novio tenga que informarse de algo que te guste y deba exponerlo!",
-  "🍫 ¡Vale por un chocolate la próxima vez que nos veamos!",
-  "🍦 ¡Vale por un helado!",
-  "🍦 ¡Vale por un helado!"
+  "🍫 ¡Vale por un chocolate la próxima vez que nos veamos!"
 ];
 
-const CLAVE_STORAGE = "premio_aniversario_mili_v1";
+const CLAVE_TIROS = "tiros_aniversario_mili_v1";
+const CLAVE_PREMIO = "premio_aniversario_mili_v1";
+const CLAVE_INDICE = "indice_aniversario_mili_v1";
 
-// Al cargar la página, revisa si ya giró antes
+let rotacionActual = 0;
+
+// Al cargar la página, revisa cuántos tiros usó y qué premio tiene guardado
 window.addEventListener("DOMContentLoaded", () => {
-  const premioGuardado = localStorage.getItem(CLAVE_STORAGE);
-  if (premioGuardado) {
-    mostrarPremioCanjeado(premioGuardado, false);
+  const tirosUsados = parseInt(localStorage.getItem(CLAVE_TIROS) || "0");
+  const premioGuardado = localStorage.getItem(CLAVE_PREMIO);
+
+  if (tirosUsados >= 2 && premioGuardado) {
+    mostrarEstadoFinal(premioGuardado, false, true);
+  } else if (tirosUsados === 1 && premioGuardado) {
+    mostrarEstadoFinal(premioGuardado, false, false);
   }
 });
 
 function girarRuleta() {
-  // Doble seguridad por si intenta tocar rápido
-  if (localStorage.getItem(CLAVE_STORAGE)) return;
+  let tirosUsados = parseInt(localStorage.getItem(CLAVE_TIROS) || "0");
+  if (tirosUsados >= 2) return;
 
   const btnGirar = document.getElementById("btnGirar");
   const ruleta = document.getElementById("ruleta");
-  btnGirar.disabled = true;
-  btnGirar.innerText = "Girando...";
-
-  // Elige un premio al azar (del 0 al 5)
-  const indiceGanador = Math.floor(Math.random() * premios.length);
-  const premioElegido = premios[indiceGanador];
-
-  // Calcula los grados para que caiga justo en el gajo ganador + 5 vueltas completas
-  const gradosPorGajo = 360 / premios.length;
-  const anguloObjetivo = 360 - (indiceGanador * gradosPorGajo + gradosPorGajo / 2);
-  const rotacionTotal = (360 * 5) + anguloObjetivo;
-
-  ruleta.style.transform = `rotate(${rotacionTotal}deg)`;
-
-  // Espera los 4 segundos que dura la animación de giro
-  setTimeout(() => {
-    localStorage.setItem(CLAVE_STORAGE, premioElegido);
-    mostrarPremioCanjeado(premioElegido, true);
-  }, 4100);
-}
-
-function mostrarPremioCanjeado(premio, lanzarConfeti) {
-  const btnGirar = document.getElementById("btnGirar");
   const cartel = document.getElementById("cartelPremio");
 
   btnGirar.disabled = true;
-  btnGirar.innerText = "Premio ya canjeado 🔒";
+  btnGirar.innerText = "Girando...";
+  cartel.style.display = "none";
+
+  // Elige un premio al azar, asegurando que en el 2do tiro no repita el 1ro
+  const indiceAnterior = parseInt(localStorage.getItem(CLAVE_INDICE) || "-1");
+  let indiceGanador;
+  do {
+    indiceGanador = Math.floor(Math.random() * premios.length);
+  } while (indiceGanador === indiceAnterior);
+
+  const premioElegido = premios[indiceGanador];
+
+  // Cálculo de grados adaptado a 4 gajos (90 grados cada uno)
+  const gradosPorGajo = 360 / premios.length;
+  const anguloObjetivo = 360 - (indiceGanador * gradosPorGajo + gradosPorGajo / 2);
+  const baseVueltas = Math.ceil(rotacionActual / 360) * 360;
+  rotacionActual = baseVueltas + (360 * 5) + anguloObjetivo;
+
+  ruleta.style.transform = `rotate(${rotacionActual}deg)`;
+
+  setTimeout(() => {
+    tirosUsados += 1;
+    localStorage.setItem(CLAVE_TIROS, tirosUsados.toString());
+    localStorage.setItem(CLAVE_PREMIO, premioElegido);
+    localStorage.setItem(CLAVE_INDICE, indiceGanador.toString());
+
+    const esUltimoTiro = tirosUsados >= 2;
+    mostrarEstadoFinal(premioElegido, true, esUltimoTiro);
+  }, 4100);
+}
+
+function mostrarEstadoFinal(premio, lanzarConfeti, bloqueadoTotal) {
+  const btnGirar = document.getElementById("btnGirar");
+  const cartel = document.getElementById("cartelPremio");
+
+  if (bloqueadoTotal) {
+    btnGirar.disabled = true;
+    btnGirar.innerText = "Premio definitivo canjeado 🔒";
+  } else {
+    btnGirar.disabled = false;
+    btnGirar.innerText = "🔄 Vuelve a tirar (1 intento extra)";
+  }
 
   cartel.style.display = "block";
-  cartel.innerHTML = `🎉 ¡Ganaste!<br><span style="font-size:1.1rem; color:#ff4d6d;">${premio}</span><br><small style="color:#666; font-weight:normal;">(Sacale captura para canjearlo 😉)</small>`;
+  cartel.innerHTML = `🎉 ¡Ganaste!<br><span style="font-size:1.1rem; color:#ff4d6d;">${premio}</span><br><small style="color:#666; font-weight:normal;">${bloqueadoTotal ? "(Este es tu premio final, sacale captura 😉)" : "(Podés quedarte con este o arriesgarte con tu último tiro)"}</small>`;
 
   if (lanzarConfeti && typeof confetti === "function") {
     confetti({
